@@ -1,8 +1,12 @@
 import styled from 'styled-components';
 
 export const Form = styled.form`
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px;
 `;
 
 export const Title = styled.h1`
@@ -22,7 +26,7 @@ export const StyledInput = styled.input`
   font-size: 16px;
   border-radius: 4px;
   border: 1px solid #ccc;
-  width: 100%;
+  min-width: 300px;
   margin-bottom: 20px;
 `;
 

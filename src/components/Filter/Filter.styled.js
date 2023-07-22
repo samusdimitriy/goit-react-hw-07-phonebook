@@ -1,10 +1,16 @@
 import styled from 'styled-components';
 
 export const StyledFilterContainer = styled.div`
-  margin-bottom: 20px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 40px;
+
+  margin: 0 auto;
 `;
 
 export const StyledFilterHeading = styled.h2`
+  text-align: center;
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 10px;
@@ -15,5 +21,7 @@ export const StyledFilterInput = styled.input`
   font-size: 16px;
   border-radius: 4px;
   border: 1px solid #ccc;
-  width: 100%;
+  min-width: 300px;
+
+  max-width: 100%;
 `;

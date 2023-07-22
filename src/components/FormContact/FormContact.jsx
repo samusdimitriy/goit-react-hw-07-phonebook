@@ -62,7 +62,7 @@ const FormContact = () => {
             required
             placeholder="Number"
           />
-          <StyledButton type="submit">Add contacts</StyledButton>
+          <StyledButton type="submit">Add contact</StyledButton>
         </Form>
       )}
     </>

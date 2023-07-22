@@ -6,11 +6,13 @@ import {
   StyledContactNumber,
   StyledDeleteButton,
   StyledContactsHeading,
+  StyledContactsList,
 } from './Contacts.styled';
 import { useDispatch, useSelector } from 'react-redux';
 import Notiflix from 'notiflix';
 import { deleteContactThunk, getContactsThunk } from 'store/contacts/thunk';
 import { selectVisibleContacts } from 'store/selectors';
+import Filter from 'components/Filter/Filter';
 
 const Contacts = () => {
   const dispatch = useDispatch();
@@ -32,8 +34,10 @@ const Contacts = () => {
   return (
     <>
       <StyledContactsHeading>Contacts</StyledContactsHeading>
+      <Filter />
+
       <StyledContactsContainer>
-        <ul>
+        <StyledContactsList>
           {contacts.map(contact => (
             <StyledContactItem key={contact.id}>
               <StyledContactName>{contact.name}:</StyledContactName>
@@ -46,7 +50,7 @@ const Contacts = () => {
               </StyledDeleteButton>
             </StyledContactItem>
           ))}
-        </ul>
+        </StyledContactsList>
       </StyledContactsContainer>
       {contacts.length < 1 && (
         <p>Your Phonebook is empty. Please add a contact.</p>
