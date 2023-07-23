@@ -1,19 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyledFilterContainer,
   StyledFilterInput,
   StyledFilterHeading,
 } from './Filter.styled';
-import { useDispatch, useSelector } from 'react-redux';
-import { changeFilter } from 'store/filter/filterSlice';
+import { useGetContactsQuery } from 'redux/contactsSlice';
 
 const Filter = () => {
-  const value = useSelector(state => state.filter);
-  const dispatch = useDispatch();
+  const [filterValue, setFilterValue] = useState('');
+
+  const { isLoading, error, refetch } = useGetContactsQuery({
+    filter: filterValue,
+  });
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      refetch({ filter: filterValue });
+    }, 500);
+
+    return () => clearTimeout(debounceTimer);
+  }, [filterValue, refetch]);
 
   const handleChange = event => {
-    dispatch(changeFilter(event.target.value));
+    const value = event.target.value;
+    setFilterValue(value);
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error while fetching contacts.</div>;
+  }
 
   return (
     <StyledFilterContainer>
@@ -21,7 +40,7 @@ const Filter = () => {
       <StyledFilterInput
         type="text"
         name="filter"
-        value={value}
+        value={filterValue}
         onChange={handleChange}
       />
     </StyledFilterContainer>

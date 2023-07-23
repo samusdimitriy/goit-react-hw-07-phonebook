@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import {
   StyledContactsContainer,
   StyledContactItem,
@@ -8,52 +7,58 @@ import {
   StyledContactsHeading,
   StyledContactsList,
 } from './Contacts.styled';
-import { useDispatch, useSelector } from 'react-redux';
 import Notiflix from 'notiflix';
-import { deleteContactThunk, getContactsThunk } from 'store/contacts/thunk';
-import { selectVisibleContacts } from 'store/selectors';
 import Filter from 'components/Filter/Filter';
+import {
+  useDeleteContactMutation,
+  useGetContactsQuery,
+} from 'redux/contactsSlice';
 
 const Contacts = () => {
-  const dispatch = useDispatch();
-  const contacts = useSelector(selectVisibleContacts);
+  const { data: contacts = [], isLoading, error } = useGetContactsQuery();
+  const [handleDeleteContact, { isLoading: isDeleting }] =
+    useDeleteContactMutation();
 
-  useEffect(() => {
-    dispatch(getContactsThunk());
-  }, [dispatch]);
+  const handleDeleteClick = async id => {
+    try {
+      await handleDeleteContact(id).unwrap();
 
-  const handleDeleteContact = id => {
-    dispatch(deleteContactThunk(id));
-    Notiflix.Notify.success(
-      `Contact "${
-        contacts.find(contact => contact.id === id).name
-      }" successfully deleted`
-    );
+      Notiflix.Notify.success('Contact successfully deleted');
+    } catch (error) {
+      Notiflix.Notify.failure('Failed to delete contact: ' + error.message);
+    }
   };
 
   return (
     <>
       <StyledContactsHeading>Contacts</StyledContactsHeading>
       <Filter />
-
-      <StyledContactsContainer>
-        <StyledContactsList>
-          {contacts.map(contact => (
-            <StyledContactItem key={contact.id}>
-              <StyledContactName>{contact.name}:</StyledContactName>
-              <StyledContactNumber>{contact.phone}</StyledContactNumber>
-              <StyledDeleteButton
-                type="button"
-                onClick={() => handleDeleteContact(contact.id)}
-              >
-                Delete
-              </StyledDeleteButton>
-            </StyledContactItem>
-          ))}
-        </StyledContactsList>
-      </StyledContactsContainer>
-      {contacts.length < 1 && (
+      {isLoading && <p>Loading...</p>}
+      {error && (
+        <p>
+          Something went wrong. Please try again later. Error: {error.message}
+        </p>
+      )}
+      {contacts.length < 1 ? (
         <p>Your Phonebook is empty. Please add a contact.</p>
+      ) : (
+        <StyledContactsContainer>
+          <StyledContactsList>
+            {contacts.map(contact => (
+              <StyledContactItem key={contact.id}>
+                <StyledContactName>{contact.name}:</StyledContactName>
+                <StyledContactNumber>{contact.phone}</StyledContactNumber>
+                <StyledDeleteButton
+                  type="button"
+                  onClick={() => handleDeleteClick(contact.id)}
+                  disabled={isDeleting}
+                >
+                  Delete
+                </StyledDeleteButton>
+              </StyledContactItem>
+            ))}
+          </StyledContactsList>
+        </StyledContactsContainer>
       )}
     </>
   );

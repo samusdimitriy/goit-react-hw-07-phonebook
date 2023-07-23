@@ -40,9 +40,9 @@ export const StyledContactNumber = styled.span`
 export const StyledDeleteButton = styled.button`
   padding: 5px 10px;
   font-size: 14px;
-  background-color: #ff0000;
+  background-color: ${props => (props.disabled ? '#ccc' : '#ff0000')};
   color: #fff;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
 `;

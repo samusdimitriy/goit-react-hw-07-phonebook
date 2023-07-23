@@ -1,13 +1,17 @@
+import React from 'react';
 import { StyledInput, StyledButton, Title, Form } from './FormContact.styled';
-import { useDispatch, useSelector } from 'react-redux';
 import Notiflix from 'notiflix';
-import { addContactThunk } from 'store/contacts/thunk';
+import {
+  useAddContactMutation,
+  useGetContactsQuery,
+} from 'redux/contactsSlice';
 
 const FormContact = () => {
-  const dispatch = useDispatch();
-  const { items, isLoading, error } = useSelector(state => state.contacts);
+  const { data: items = [], isLoading, error } = useGetContactsQuery();
+  const [addContact, { isLoading: isAdding, error: addError }] =
+    useAddContactMutation();
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     const isContactExist = items.find(
@@ -27,15 +31,13 @@ const FormContact = () => {
       phone: e.target.number.value,
     };
 
-    dispatch(addContactThunk(newContact))
-      .unwrap()
-      .then(() => {
-        Notiflix.Notify.success('Contact added');
-        e.target.reset();
-      })
-      .catch(error => {
-        Notiflix.Notify.failure('Failed to add contact: ' + error.message);
-      });
+    try {
+      await addContact(newContact).unwrap();
+      Notiflix.Notify.success('Contact added');
+      e.target.reset();
+    } catch (error) {
+      Notiflix.Notify.failure('Failed to add contact: ' + addError.message);
+    }
   };
 
   return (
@@ -62,7 +64,9 @@ const FormContact = () => {
             required
             placeholder="Number"
           />
-          <StyledButton type="submit">Add contact</StyledButton>
+          <StyledButton type="submit" disabled={isAdding}>
+            Add contact
+          </StyledButton>
         </Form>
       )}
     </>
